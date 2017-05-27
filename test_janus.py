@@ -10,30 +10,31 @@ class SampleUser:
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
-    def to_token(self):
+    @property
+    def token_data(self):
         return {
             'id': self.id,
             'email': self.email
         }
 
     @classmethod
-    def from_token(cls, **kwargs):
-        return cls(**kwargs)
+    def from_token_data(cls, token_data):
+        return cls(**token_data)
 
 
-input_user = SampleUser('1234', 'test@email.com')
+sample_user = SampleUser('1234', 'test@email.com')
 
 
 def test_janus_no_user_factory():
     j = Janus(jwt_secret='whatever')
-    token = j.make_token(user=input_user)
+    token = j.make_token(user=sample_user)
     user_dict = j.read_token(token=token)
-    assert user_dict['id'] == input_user.id
-    assert user_dict['email'] == input_user.email
+    assert user_dict['id'] == sample_user.id
+    assert user_dict['email'] == sample_user.email
 
 
 def test_janus_with_user_factory():
-    j = Janus(jwt_secret='whatever')
-    token = j.make_token(user=input_user)
-    output_user = j.read_token(token=token, user_cls=SampleUser)
-    assert input_user == output_user
+    j = Janus(jwt_secret='whatever', user_class=SampleUser)
+    token = j.make_token(user=sample_user)
+    output_user = j.read_token(token=token)
+    assert sample_user == output_user
