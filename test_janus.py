@@ -12,10 +12,7 @@ class SampleUser:
 
     @property
     def token_data(self):
-        return {
-            'id': self.id,
-            'email': self.email
-        }
+        return self.__dict__
 
     @classmethod
     def from_token_data(cls, token_data):
